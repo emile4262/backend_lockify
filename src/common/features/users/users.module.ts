@@ -1,0 +1,47 @@
+import { CqrsModule} from '@nestjs/cqrs';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Module } from '@nestjs/common';
+
+import { ConfigModule } from '@nestjs/config';
+import { CreateUsersHandler } from './handlers/create-user.handler';
+import { UpdateUsersHandler } from './handlers/update-user.handler';
+import { DeleteUsersHandler } from './handlers/delete-user.handler';
+import { GetUsersHandler } from './handlers/get-user.handler';
+import { GetOneUsersHandler } from './handlers/getOne-user.handler';
+import { UserSchema } from 'src/common/schema/users.schema';
+import { Auth, AuthSchema } from 'src/common/schema/auth.schema';
+import { UsersController } from './users.controller';
+import { usersRepository } from './repository/users.repository';
+
+const CommandHandlers = [
+  CreateUsersHandler,
+  UpdateUsersHandler,
+  DeleteUsersHandler,
+];
+
+const QueryHandlers = [
+  GetUsersHandler, 
+  GetOneUsersHandler,
+];
+
+@Module({
+  imports: [
+    CqrsModule, 
+    ConfigModule,
+    MongooseModule.forFeature([
+      { name: 'User',  schema: UserSchema },
+      { name: Auth.name, schema: AuthSchema },
+    ]),
+  ],
+  controllers: [UsersController],
+  providers: [
+    {
+      provide: 'IUsersRepository',
+      useClass: usersRepository,
+    },
+    ...CommandHandlers,
+    ...QueryHandlers
+  ],
+  exports: [],
+})
+export class UsersModule {}
