@@ -3,9 +3,8 @@ import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { LoginUserCommand }    from './commands/login-user.command'
 import { LoginRequestDto }     from './dto/login.request.dto'
-import { JwtAuthGuard }        from '../../../guards/jwt-auth.guard'
 import { ApiProperty } from "@nestjs/swagger";
-import { CurrentUser, Public }  from '../../../guards/current-user.decorator'
+import {  Public }  from '../../../guards/current-user.decorator'
 
 @Controller('auth')
 export class AuthController {
