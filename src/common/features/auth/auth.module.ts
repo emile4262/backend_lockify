@@ -13,7 +13,7 @@ import { Auth, AuthSchema } from 'src/common/schema/auth.schema'
 const CommandHandlers = [
   LoginUserHandler,
 ]
-
+ 
 const QueryHandlers = [
 ]
 
