@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { AuthModule } from './common/features/auth/auth.module'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { UsersModule } from './common/features/users/users.module'
+import { DocumentsModule } from './common/features/documents/document.module'
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { UsersModule } from './common/features/users/users.module'
     CqrsModule.forRoot(),  
     AuthModule,
     UsersModule,
+    DocumentsModule,
 
     BullModule.forRootAsync({
       imports: [ConfigModule],
