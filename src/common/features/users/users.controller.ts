@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Put, Delete, Param, HttpStatus, UseGuards, Inject } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiProperty } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiProperty, ApiBearerAuth } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserCommand } from './commands/create-user.command';
@@ -9,9 +9,11 @@ import { UpdateUserCommand } from './commands/update-user.command';
 import { DeleteUserCommand } from './commands/delete-user.command';
 import { usersRepository } from './repository/users.repository';
 import { GetUserQuery } from './query/get-user.query';
-import { Public } from '../../../guards/current-user.decorator';
+import { Public } from '../../../guards/public.decorator';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
 
@@ -29,7 +31,6 @@ constructor(
 }
 
   @Get('All')
-  @Public()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
   getUsers() {

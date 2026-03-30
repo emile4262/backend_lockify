@@ -1,20 +1,32 @@
-// auth/strategies/jwt.strategy.ts
-import { Injectable } from '@nestjs/common'
-import { PassportStrategy } from '@nestjs/passport'
-import { ExtractJwt, Strategy } from 'passport-jwt'
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { PassportStrategy } from '@nestjs/passport';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
-    super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'fallback-secret-key-for-development'
-    })
+ constructor(
+  private configService: ConfigService,
+) {
+   const secret = configService.get<string>('JWT_SECRET') || 'fallback-secret-key-for-development';
+   super({
+     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+     ignoreExpiration: false,
+     secretOrKey: secret
+   });
+}
+
+async validate(payload: { sub: string; email: string; role: string }): Promise<
+{ userId: string; email: string; role: string }
+> {
+  if (!payload.role) {
+    throw new UnauthorizedException('Information de rôle manquante');
   }
 
-  // Ce qui est retourné ici est injecté dans request.user
-  async validate(payload: { sub: string; email: string }) {
-    return { userId: payload.sub, email: payload.email }
-  }
+  return {
+    userId: payload.sub,
+    email: payload.email,
+    role: payload.role,
+  };
+}
 }

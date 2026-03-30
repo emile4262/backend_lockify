@@ -18,9 +18,9 @@ import {
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { memoryStorage } from 'multer'
-import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiProperty } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiProperty, ApiBearerAuth } from '@nestjs/swagger'
 import { DocumentCategory } from 'src/common/schema/documents.schema'
-import { CurrentUser, Public } from 'src/guards/current-user.decorator'
+import { CurrentUser, Public } from 'src/guards/public.decorator'
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard'
 import { DeleteDocumentCommand } from './commands/delete.command'
 import { UpdateDocumentCommand } from './commands/update.command'
@@ -40,6 +40,7 @@ interface JwtPayload {
 }
 
 @ApiTags('documents')
+@ApiBearerAuth()
 @Controller('documents')
 @UseGuards(JwtAuthGuard)
 export class DocumentsController {
