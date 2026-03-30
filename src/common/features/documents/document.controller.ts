@@ -13,14 +13,15 @@ import {
   ParseFilePipe,
   MaxFileSizeValidator,
   FileTypeValidator,
+  UnauthorizedException,
 } from '@nestjs/common'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { FileInterceptor } from '@nestjs/platform-express'
+import { memoryStorage } from 'multer'
+import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiProperty } from '@nestjs/swagger'
 import { DocumentCategory } from 'src/common/schema/documents.schema'
-import { CurrentUser } from 'src/guards/current-user.decorator'
+import { CurrentUser, Public } from 'src/guards/current-user.decorator'
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard'
-
-import { v4 as uuid } from 'uuid'
 import { DeleteDocumentCommand } from './commands/delete.command'
 import { UpdateDocumentCommand } from './commands/update.command'
 import { UploadDocumentCommand } from './commands/upload.command'
@@ -28,6 +29,9 @@ import { UpdateDocumentRequestDto } from './dto/update.request.dto'
 import { UploadDocumentRequestDto } from './dto/upload.request.dto'
 import { GetDocumentByIdQuery } from './query/getOne.document'
 import { ListDocumentsQuery } from './query/list.document'
+import { v4 as uuid } from 'uuid'
+import { Types } from 'mongoose'
+import { PaginationDto } from './dto/pagination.dto'
 
 // JWT payload type based on JwtStrategy.validate() return value
 interface JwtPayload {
@@ -35,6 +39,7 @@ interface JwtPayload {
   email: string
 }
 
+@ApiTags('documents')
 @Controller('documents')
 @UseGuards(JwtAuthGuard)
 export class DocumentsController {
@@ -44,10 +49,31 @@ export class DocumentsController {
   ) {}
 
   // POST /documents — upload un fichier
-  @Post()
-  @UseInterceptors(FileInterceptor('file'))
+ @Post()
+  @Public()
+  @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload un fichier document' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        fileName: { type: 'string' },
+        // category: {
+        //   type: 'string',
+        //   enum: Object.values(DocumentCategory),
+        // },
+        // tags:      { type: 'array', items: { type: 'string' } },
+        // expiresAt: { type: 'string', format: 'date-time' },
+      },
+      required: ['file', ],
+    },
+  })
   async upload(
-    @CurrentUser() user: JwtPayload,
     @UploadedFile(
       new ParseFilePipe({
         validators: [
@@ -58,44 +84,41 @@ export class DocumentsController {
         ],
       }),
     )
-    file: any,
+    file: Express.Multer.File,
     @Body() dto: UploadDocumentRequestDto,
+    @CurrentUser() user?: JwtPayload,
   ) {
-    // storageKey = chemin unique dans le stockage (ex: S3, local)
-    const storageKey = `${user.userId}/${uuid()}-${file.originalname}`
-
+    // Si non authentifié (endpoint public), ObjectId temporaire
+    const userId = user?.userId ?? new Types.ObjectId().toString()
+ 
     return this.commandBus.execute(
       new UploadDocumentCommand(
-        user.userId,
+        userId,
         dto.fileName ?? file.originalname,
         file.mimetype,
         file.size,
-        storageKey,
+        file.buffer,              // stockage direct en BD
         dto.category,
-        dto.tags ?? [],
         dto.expiresAt ? new Date(dto.expiresAt) : null,
       ),
     )
   }
 
   // GET /documents — liste avec filtres optionnels
-  @Get()
+  @Get('/:userId')
+  @Public()
   list(
-    @CurrentUser() user: JwtPayload,
-    @Query('category') category?: DocumentCategory,
-    @Query('search') search?: string,
-    @Query('page') page?: string,
-    @Query('pageSize') pageSize?: string,
+    @Param('userId') userId: string,
+    @Query() dto: PaginationDto,
+    @CurrentUser() user?: JwtPayload,
+   
   ) {
     return this.queryBus.execute(
       new ListDocumentsQuery(
-        user.userId,
-        category,
-        search,
-        page ? Number(page) : 1,
-        pageSize ? Number(pageSize) : 20,
-      ),
-    )
+        userId,
+        dto
+      )
+    );
   }
 
   // GET /documents/:id — détail d'un document
@@ -105,40 +128,46 @@ export class DocumentsController {
     @Param('id') id: string,
   ) {
     return this.queryBus.execute(
-      new GetDocumentByIdQuery(id, user.userId),
+      new GetDocumentByIdQuery(id ),
     )
   }
 
   // PATCH /documents/:id — mise à jour des métadonnées
   @Patch(':id')
+  @Public()
   update(
-    @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
     @Body() dto: UpdateDocumentRequestDto,
+    @CurrentUser() user?: JwtPayload,
   ) {
+    if (!user) {
+      throw new UnauthorizedException('Authentication required for update operations');
+    }
+    
     return this.commandBus.execute(
       new UpdateDocumentCommand(
         id,
         user.userId,
         dto.fileName,
         dto.category,
-        dto.tags,
-        dto.expiresAt !== undefined
-          ? dto.expiresAt === null ? null : new Date(dto.expiresAt)
-          : undefined,
-        dto.isFavorite,
+        
       ),
     )
   }
 
-  // DELETE /documents/:id
   @Delete(':id')
-  delete(
-    @CurrentUser() user: JwtPayload,
+  @Public()
+  @ApiProperty({ description: 'supprimer tous les documents'})
+  async delete(
     @Param('id') id: string,
   ) {
-    return this.commandBus.execute(
-      new DeleteDocumentCommand(id, user.userId),
-    )
+    const result = await this.commandBus.execute(
+      new DeleteDocumentCommand(id, id),
+    );
+
+    return {
+      message: 'document supprimé',
+      data: result,
+    };
   }
 }

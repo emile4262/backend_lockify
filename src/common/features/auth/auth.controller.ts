@@ -3,9 +3,10 @@ import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { LoginUserCommand }    from './commands/login-user.command'
 import { LoginRequestDto }     from './dto/login.request.dto'
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiTags } from "@nestjs/swagger";
 import {  Public }  from '../../../guards/current-user.decorator'
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(

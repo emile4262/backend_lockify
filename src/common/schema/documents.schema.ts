@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose'
 import * as mongoose from 'mongoose'
 
-export type DocumentDocument = DocumentEntity & Document
+export type DocumentDocument = DocumentEntity & mongoose.Document
 
 export enum DocumentCategory {
   IDENTITE = 'identite',
@@ -18,7 +18,7 @@ export enum DocumentCategory {
 @Schema({ timestamps: true, collection: 'documents' })
 export class DocumentEntity {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  ownerId: mongoose.Types.ObjectId
+  userId: mongoose.Types.ObjectId
 
   @Prop({ required: true, trim: true })
   fileName: string
@@ -30,7 +30,7 @@ export class DocumentEntity {
   fileSizeBytes: number
 
   @Prop({ required: true })
-  storageKey: string
+  pdfUrl: string
 
   @Prop({
     required: true,

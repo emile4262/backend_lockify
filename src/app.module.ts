@@ -21,7 +21,7 @@ import { DocumentsModule } from './common/features/documents/document.module'
 
     BullModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (config: ConfigService) => ({
+      useFactory: (config: ConfigService): any => ({
         redis: {
           host: config.get('REDIS_HOST'),
           port: config.get('REDIS_PORT')

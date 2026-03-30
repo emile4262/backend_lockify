@@ -1,7 +1,9 @@
 import { QueryHandler, IQueryHandler } from '@nestjs/cqrs'
 import { DocumentRepository } from '../repository/document.repository'
-import { DocumentListResponseDto } from '../dto/document.response.dto'
 import { ListDocumentsQuery } from '../query/list.document'
+import { PaginationDto } from '../dto/pagination.dto'
+import { PaginationService } from 'src/pagination/pagination'
+import { DocumentEntity } from 'src/common/schema/documents.schema'
 
 @QueryHandler(ListDocumentsQuery)
 export class ListDocumentsHandler
@@ -9,7 +11,8 @@ export class ListDocumentsHandler
 {
   constructor(private readonly documentRepository: DocumentRepository) {}
 
-  async execute(query: ListDocumentsQuery): Promise<DocumentListResponseDto> {
-    return this.documentRepository.list(query)
+  async execute(query: ListDocumentsQuery): Promise<PaginationService<DocumentEntity>> {
+    
+    return await this.documentRepository.findAllByUsers(query.pagination ?? {}); 
   }
 }

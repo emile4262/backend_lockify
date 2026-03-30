@@ -3,7 +3,6 @@ import {
   IsString,
   IsEnum,
   IsOptional,
-  IsArray,
   IsDateString,
   MaxLength,
 } from 'class-validator'
@@ -20,13 +19,8 @@ export class UploadDocumentRequestDto {
   @IsEnum(DocumentCategory, { message: 'Catégorie invalide' })
   category: DocumentCategory
 
-    @ApiProperty({description: "Renseigner les tags associés au document (facultatif)"})
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  tags?: string[]
+   
 
-    @ApiProperty({description: "Renseigner la date d'expiration du document (facultatif, format ISO 8601)"})
   @IsOptional()
   @IsDateString({}, { message: 'Date d\'expiration invalide' })
   expiresAt?: string

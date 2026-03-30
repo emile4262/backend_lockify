@@ -6,9 +6,8 @@ export class UploadDocumentCommand {
     public readonly fileName: string,
     public readonly mimeType: string,
     public readonly fileSizeBytes: number,
-    public readonly storageKey: string,
+    public readonly fileBuffer: Buffer,
     public readonly category: DocumentCategory,
-    public readonly tags: string[],
     public readonly expiresAt: Date | null,
   ) {}
 }

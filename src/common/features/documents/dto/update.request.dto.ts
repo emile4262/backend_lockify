@@ -18,23 +18,16 @@ export class UpdateDocumentRequestDto {
   @MaxLength(255)
   fileName?: string
 
-    @ApiProperty({description: "Renseigner la catégorie du document"})
   @IsOptional()
   @IsEnum(DocumentCategory, { message: 'Catégorie invalide' })
   category?: DocumentCategory
 
-    @ApiProperty({description: "Renseigner les tags associés au document (facultatif)"})
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  tags?: string[]
 
-  @ApiProperty({description: "Renseigner la date d'expiration du document (facultatif, format ISO 8601)"})
+
   @IsOptional()
   @IsDateString()
   expiresAt?: string | null
 
-    @ApiProperty({description: "Indiquer si le document est un favori (facultatif)"})
   @IsOptional()
   @IsBoolean()
   isFavorite?: boolean

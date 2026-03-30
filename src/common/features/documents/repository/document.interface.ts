@@ -1,4 +1,5 @@
 import { DocumentCategory, DocumentDocument } from "src/common/schema/documents.schema"
+import { DocumentResponseDto } from "../dto/document.response.dto"
 
 export interface IDocumentInterface {
   create(data: {
@@ -34,9 +35,9 @@ export interface IDocumentInterface {
       expiresAt: Date | null
       isFavorite: boolean
     }>,
-  ): Promise<DocumentDocument | null>
+  ): Promise<DocumentResponseDto | null>
 
-  delete(id: string, ownerId: string): Promise<boolean>
+  delete(id: string, ownerId: string): Promise<DocumentResponseDto>
 
   findExpiringSoon(ownerId: string, withinDays: number): Promise<DocumentDocument[]>
 }

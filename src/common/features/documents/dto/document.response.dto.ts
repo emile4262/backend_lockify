@@ -19,11 +19,11 @@ export class DocumentResponseDto {
   static fromDocument(doc: any): DocumentResponseDto {
     return new DocumentResponseDto(
       doc._id.toString(),
-      doc.ownerId.toString(),
+      doc.userId.toString(),
       doc.fileName,
       doc.mimeType,
       doc.fileSizeBytes,
-      doc.storageKey,
+      doc.pdfUrl,
       doc.category,
       doc.tags ?? [],
       doc.expiresAt ? new Date(doc.expiresAt).toISOString() : null,
@@ -38,11 +38,11 @@ export class DocumentResponseDto {
   }
 }
 
-export class DocumentListResponseDto {
-  constructor(
-    public readonly items: DocumentResponseDto[],
-    public readonly total: number,
-    public readonly page: number,
-    public readonly pageSize: number,
-  ) {}
-}
+// export class DocumentListResponseDto {
+//   constructor(
+//     public readonly items: DocumentResponseDto[],
+//     public readonly total: number,
+//     public readonly page: number,
+//     public readonly pageSize: number,
+//   ) {}
+// }

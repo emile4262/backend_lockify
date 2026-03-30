@@ -1,13 +1,16 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common'
+import { Injectable, BadRequestException, NotFoundException, HttpException } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import * as mongoose from 'mongoose'
 import { DocumentEntity, DocumentDocument } from 'src/common/schema/documents.schema'
 import { DeleteDocumentCommand } from '../commands/delete.command'
 import { UpdateDocumentCommand } from '../commands/update.command'
 import { UploadDocumentCommand } from '../commands/upload.command'
-import { DocumentResponseDto, DocumentListResponseDto } from '../dto/document.response.dto'
+import { DocumentResponseDto} from '../dto/document.response.dto'
 import { GetDocumentByIdQuery } from '../query/getOne.document'
 import { ListDocumentsQuery } from '../query/list.document'
+import { PaginationService } from 'src/pagination/pagination'
+import { PaginationDto } from '../dto/pagination.dto'
 
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
@@ -27,35 +30,28 @@ export class DocumentRepository {
     private readonly documentModel: Model<DocumentDocument>,
   ) {}
 
-  // ─────────────────────────────────────────────
   // COMMAND — Upload
-  // ─────────────────────────────────────────────
   async upload(cmd: UploadDocumentCommand): Promise<DocumentResponseDto> {
-    if (!ALLOWED_MIME_TYPES.includes(cmd.mimeType)) {
-      throw new BadRequestException('TYPE_FICHIER_NON_SUPPORTE')
+    try {
+      const document = await this.documentModel.create({
+        userId:       new mongoose.Types.ObjectId(cmd.userId),
+        fileName:      cmd.fileName,
+        mimeType:      cmd.mimeType,
+        fileSizeBytes: cmd.fileSizeBytes,
+        pdfUrl:    `uploads/${cmd.userId}/${cmd.fileName}`,
+        category:      cmd.category,
+        tags:          [],
+        expiresAt:     cmd.expiresAt,
+      })
+ 
+      return DocumentResponseDto.fromDocument(document)
+    } catch (error) {
+      console.error('Erreur upload détaillée:', error);
+      throw new HttpException(`Erreur lors de l'upload du fichier: ${error.message}`, 500)
     }
-
-    if (cmd.fileSizeBytes > MAX_FILE_SIZE) {
-      throw new BadRequestException('FICHIER_TROP_VOLUMINEUX')
-    }
-
-    const document = await this.documentModel.create({
-      userId:       cmd.userId,
-      fileName:      cmd.fileName,
-      mimeType:      cmd.mimeType,
-      fileSizeBytes: cmd.fileSizeBytes,
-      storageKey:    cmd.storageKey,
-      category:      cmd.category,
-      tags:          cmd.tags,
-      expiresAt:     cmd.expiresAt,
-    })
-
-    return DocumentResponseDto.fromDocument(document)
   }
 
-  // ─────────────────────────────────────────────
   // COMMAND — Update
-  // ─────────────────────────────────────────────
   async update(cmd: UpdateDocumentCommand): Promise<DocumentResponseDto> {
     const updateData: any = {}
     if (cmd.fileName  !== undefined) updateData.fileName  = cmd.fileName
@@ -70,7 +66,7 @@ export class DocumentRepository {
 
     const updated = await this.documentModel
       .findOneAndUpdate(
-        { _id: cmd.documentId, userId: cmd.userId },
+        { _id: cmd.documentId, ownerId: cmd.userId },
         { $set: updateData },
         { new: true },
       )
@@ -82,27 +78,30 @@ export class DocumentRepository {
     return DocumentResponseDto.fromDocument(updated)
   }
 
-  // ─────────────────────────────────────────────
   // COMMAND — Delete
-  // ─────────────────────────────────────────────
-  async delete(cmd: DeleteDocumentCommand): Promise<{ deleted: boolean }> {
-    const result = await this.documentModel
-      .deleteOne({ _id: cmd.documentId, userId: cmd.userId })
-      .exec()
+  
+  async deleteDocument(id: string): Promise<DocumentResponseDto> {
+    const document = await this.documentModel.findById(id);
 
-    if (result.deletedCount === 0) {
-      throw new NotFoundException('DOCUMENT_NOT_FOUND')
+    if (!document) {
+      throw new NotFoundException('Document non trouvé.');
     }
 
-    return { deleted: true }
-  }
+    // Hard delete - supprimer définitivement le document
+    const deletedDocument = await this.documentModel
+      .findByIdAndDelete(id)
+      .exec();
 
-  // ─────────────────────────────────────────────
+    if (!deletedDocument) {
+      throw new NotFoundException('Document non trouvé.');
+    }
+
+    return DocumentResponseDto.fromDocument(deletedDocument);
+  }
   // QUERY — Get by ID
-  // ─────────────────────────────────────────────
-  async getById(query: GetDocumentByIdQuery): Promise<DocumentResponseDto> {
+  async getById(id: string): Promise<DocumentResponseDto> {
     const document = await this.documentModel
-      .findOne({ _id: query.documentId, userId: query.ownerId })
+      .findOne({ _id: id })
       .lean()
       .exec()
 
@@ -111,39 +110,43 @@ export class DocumentRepository {
     return DocumentResponseDto.fromDocument(document)
   }
 
-  // ─────────────────────────────────────────────
   // QUERY — List avec filtres
-  // ─────────────────────────────────────────────
-  async list(query: ListDocumentsQuery): Promise<DocumentListResponseDto> {
-    const filter: any = { userId: query.ownerId }
+  async findAllByUsers(
+    dto: PaginationDto,
+  ): Promise<PaginationService<DocumentEntity>>{
+    const { search, page, limit, dateCreationDebut, dateCreationFin } = dto;
+    const query: any = {};
 
-    if (query.category) filter.category = query.category
-    if (query.search)   filter.fileName = { $regex: query.search, $options: 'i' }
+    const Page = page ? parseInt(String(page), 10) : 1;
+    const Limit = limit ? parseInt(String(limit), 10) : 10;
 
-    const skip = (query.page - 1) * query.pageSize
+    if (search) {
+      query.designation = { $regex: search, $options: 'i' };
+    }
+    // Filtres de date - corrigé pour fonctionner individuellement
+    if (dateCreationDebut || dateCreationFin) {
+      query.createdAt = {};
+      if (dateCreationDebut) {
+        query.createdAt.$gte = new Date(dateCreationDebut);
+      }
+      if (dateCreationFin) {
+        const endDate = new Date(dateCreationFin);
+        endDate.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = endDate;
+      }
+    }
 
-    const [items, total] = await Promise.all([
-      this.documentModel
-        .find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(query.pageSize)
-        .lean()
-        .exec(),
-      this.documentModel.countDocuments(filter),
-    ])
-
-    return new DocumentListResponseDto(
-      items.map(DocumentResponseDto.fromDocument),
-      total,
-      query.page,
-      query.pageSize,
-    )
-  }
-
-  // ─────────────────────────────────────────────
+    const data = await this.documentModel
+      .find(query)
+      .sort({ createdAt: 'desc', _id: 'desc' })
+      .skip((Page - 1) * Limit)
+      .limit(Limit)
+      .exec();
+            
+    const total = await this.documentModel.countDocuments(query);
+    return new PaginationService<DocumentEntity>(data, Page, Limit, total);
+  } 
   // QUERY — Documents expirant bientôt
-  // ─────────────────────────────────────────────
   async getExpiringSoon(
     userId: string,
     withinDays: number,

@@ -10,6 +10,6 @@ export class GetDocumentByIdHandler
   constructor(private readonly documentRepository: DocumentRepository) {}
 
   async execute(query: GetDocumentByIdQuery): Promise<DocumentResponseDto> {
-    return this.documentRepository.getById(query)
+    return await this.documentRepository.getById(query.Id)
   }
 }
