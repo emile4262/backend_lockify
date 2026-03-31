@@ -28,10 +28,9 @@ import { UpdateDocumentRequestDto } from './dto/update.request.dto'
 import { UploadDocumentRequestDto } from './dto/upload.request.dto'
 import { GetDocumentByIdQuery } from './query/getOne.document'
 import { ListDocumentsQuery } from './query/list.document'
-import { v4 as uuid } from 'uuid'
 import { Types } from 'mongoose'
 import { PaginationDto } from './dto/pagination.dto'
-import { Express } from 'express'
+import type { Express } from 'express'
 
 // JWT payload type based on JwtStrategy.validate() return value
 interface JwtPayload {
