@@ -19,7 +19,6 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { memoryStorage } from 'multer'
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiProperty, ApiBearerAuth } from '@nestjs/swagger'
-import { DocumentCategory } from 'src/common/schema/documents.schema'
 import { CurrentUser, Public } from 'src/guards/public.decorator'
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard'
 import { DeleteDocumentCommand } from './commands/delete.command'
@@ -32,6 +31,7 @@ import { ListDocumentsQuery } from './query/list.document'
 import { v4 as uuid } from 'uuid'
 import { Types } from 'mongoose'
 import { PaginationDto } from './dto/pagination.dto'
+import { Express } from 'express'
 
 // JWT payload type based on JwtStrategy.validate() return value
 interface JwtPayload {
