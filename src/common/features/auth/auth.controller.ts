@@ -22,11 +22,10 @@ export class AuthController {
   //   )
   // }
 
-   @Post('login')
+   @Post('/login')
   @Public()
   @ApiOperation({ summary: "Authentification de l'utilisateur" })
   @ApiResponse({ status: 200, description: 'Authentification réussie.' })
-  //'Votre mot de passe a expiré, veuillez le changer.',407,
   @ApiResponse({
     status: 404,
     description: 'Utilisateur non trouvé',
