@@ -96,7 +96,7 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
       }
     }
 
-    // 🔒 Vérifie si une session est déjà active (sauf pour les administrateurs)
+    //  Vérifie si une session est déjà active (sauf pour les administrateurs)
     const now = new Date();
 
     // if (
