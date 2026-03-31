@@ -33,7 +33,7 @@ import { DocumentsModule } from './common/features/documents/document.module'
       inject: [ConfigService],
     }),
 
-   MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/lockify_bd')  
+   MongooseModule.forRoot(process.env.MONGO_URL || process.env.MONGO_URI || 'mongodb://localhost:27017/lockify_bd')  
   ],
   controllers: [AppController],
   providers: [
