@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Response } from 'express';
 
 async function bootstrap() {
   try {
@@ -31,9 +32,9 @@ async function bootstrap() {
     SwaggerModule.setup('api', app, document);
 
     // Route test (IMPORTANT pour Railway)
-    app.getHttpAdapter().get('/', (req, res) => {
-      res.send('API RUNNING 🚀');
-    });
+    app.getHttpAdapter().get('/', (req, res: Response) => {
+  res.send('API RUNNING 🚀');
+  }); 
 
     const port = process.env.PORT || 3000;
 
