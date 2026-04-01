@@ -5,28 +5,44 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads/',
-  });
+  try {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  const config = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('The API description')
-    .setVersion('1.0')
-    .addTag('api')
-    .addBearerAuth()
-    .build();
+    // Static files
+    app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+      prefix: '/uploads/',
+    });
 
-  // Pour autoriser les requêtes cross-origin (CORS)
-  app.enableCors({
-    origin: '*', 
-  });
+    // CORS
+    app.enableCors({
+      origin: '*',
+    });
 
-  const document = SwaggerModule.createDocument(app as any, config);
-  SwaggerModule.setup('api', app as any, document);
-  const port = process.env.PORT || 5001;
+    // Swagger
+    const config = new DocumentBuilder()
+      .setTitle('API Documentation')
+      .setDescription('The API description')
+      .setVersion('1.0')
+      .addTag('api')
+      .addBearerAuth()
+      .build();
 
-  await app.listen(port, '0.0.0.0');
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+
+    // Route test (IMPORTANT pour Railway)
+    app.getHttpAdapter().get('/', (req, res) => {
+      res.send('API RUNNING 🚀');
+    });
+
+    const port = process.env.PORT || 3000;
+
+    await app.listen(port, '0.0.0.0');
+
+    console.log(`🚀 App running on port ${port}`);
+  } catch (error) {
+    console.error('❌ BOOT ERROR:', error);
+  }
 }
+
 bootstrap();
