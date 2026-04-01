@@ -36,7 +36,7 @@ async function bootstrap() {
   res.send('API RUNNING 🚀');
   }); 
 
-    const port = process.env.PORT || 3000;
+    const port = process.env.PORT || 8080;
 
     await app.listen(port, '0.0.0.0');
 
