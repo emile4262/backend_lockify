@@ -13,8 +13,8 @@ async function bootstrap() {
 
     // ... tes configs (CORS, Swagger, etc.)
 
-    const port = process.env.PORT || 8080;
-    console.log(`--- ÉTAPE 3: Tentative écoute sur port ${port} ---`);
+  const port = parseInt(String(process.env.PORT), 10) || 8080;
+  console.log(`--- ÉTAPE 3: Tentative écoute sur port ${port} ---`);
     
     await app.listen(port, '0.0.0.0');
     console.log(`🚀 App running on port ${port}`);
