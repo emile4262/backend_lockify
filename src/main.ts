@@ -26,7 +26,7 @@ async function bootstrap() {
 
     // Configuration SWAGGER
     const config = new DocumentBuilder()
-      .setTitle('Lockify API')
+      .setTitle('api')
       .setDescription('Documentation de l’API backend sur Railway')
       .setVersion('1.0')
       .addTag('api')
@@ -36,23 +36,14 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     
     // Le premier argument 'api' est le chemin de la doc. 
-    // Avec le global prefix, Swagger sera sur : /api
     SwaggerModule.setup('api', app, document);
 
     //Gestion du Port pour Railway
-    const port = process.env.PORT || 8080;
-    console.log(`--- ÉTAPE 3: Tentative écoute sur port ${port} ---`);
-    
+    const port = process.env.PORT || 8080;    
     await app.listen(port, '0.0.0.0');
     
-    console.log(`🚀 Serveur prêt !`);
-    console.log(`📜 Swagger disponible sur : /api`);
-    
   } catch (error) {
-    console.error('❌ ERREUR CRITIQUE AU DÉMARRAGE :', error);
     process.exit(1);
   }
-  
 }
-
 bootstrap();
