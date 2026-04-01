@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Put, Delete, Param, HttpStatus, UseGuards, Inject } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiProperty } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiProperty, ApiBearerAuth } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { CreateUserCommand } from './commands/create-user.command';
@@ -9,9 +9,11 @@ import { UpdateUserCommand } from './commands/update-user.command';
 import { DeleteUserCommand } from './commands/delete-user.command';
 import { usersRepository } from './repository/users.repository';
 import { GetUserQuery } from './query/get-user.query';
-import { Public } from '../../../guards/current-user.decorator';
+import { Public } from '../../../guards/public.decorator';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class UsersController {
 
@@ -24,12 +26,27 @@ constructor(
   @Post('create')
   @Public()
   @ApiProperty({ description: 'Créer un nouveau utilisateur' })
-  create(@Body() dto: CreateUserDto){
-    return this.commandBus.execute(new CreateUserCommand(dto));
+  async create(@Body() dto: CreateUserDto){
+    try {
+      const user = await this.commandBus.execute(new CreateUserCommand(dto));
+      return {
+        success: true,
+        message: 'Utilisateur créé avec succès',
+        data: user
+      };
+    } catch (error) {
+      if (error.message === 'Cet email est déjà utilisé') {
+        return {
+          success: false,
+          message: 'Cet email est déjà utilisé',
+          statusCode: HttpStatus.CONFLICT
+        };
+      }
+      throw error;
+    }
 }
 
   @Get('All')
-  @Public()
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
   getUsers() {

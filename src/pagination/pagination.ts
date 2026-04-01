@@ -16,6 +16,8 @@ class PageMeta {
   }
 }
 
+
+
 export class PaginationService<T> {
   static Paginate(): PaginationService<any> | PromiseLike<PaginationService<any>> {
     throw new Error('Method not implemented.');

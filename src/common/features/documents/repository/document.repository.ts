@@ -98,6 +98,8 @@ export class DocumentRepository {
 
     return DocumentResponseDto.fromDocument(deletedDocument);
   }
+
+  
   // QUERY — Get by ID
   async getById(id: string): Promise<DocumentResponseDto> {
     const document = await this.documentModel

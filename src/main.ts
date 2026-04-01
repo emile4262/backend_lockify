@@ -5,29 +5,45 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
-    prefix: '/uploads/',
-  });
+  console.log('--- ÉTAPE 1: Initialisation Nest ---');
+  
+  try {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule);
+    console.log('--- ÉTAPE 2: AppModule chargé ---');
 
-  const config = new DocumentBuilder()
-    .setTitle('API Documentation')
-    .setDescription('The API description')
-    .setVersion('1.0')
-    .addTag('api')
-    .addBearerAuth()
-    .build();
+    //Préfixe Global : Toutes tes routes seront sous /api (ex: /api/users/All)
+    app.setGlobalPrefix('api');
 
-  // Pour autoriser les requêtes cross-origin (CORS)
-  app.enableCors({
-    origin: '*', 
-  });
+    // Fichiers statiques (Uploads)
+    app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+      prefix: '/uploads/',
+    });
 
-  const document = SwaggerModule.createDocument(app as any, config);
-  SwaggerModule.setup('api', app as any, document);
-  const port = process.env.PORT ?? 5001;
+    //Configuration CORS (pour autoriser ton frontend)
+    app.enableCors({
+      origin: '*',
+    });
 
-  await app.listen(port, () => {
-  });
+    // Configuration SWAGGER
+    const config = new DocumentBuilder()
+      .setTitle('api')
+      .setDescription('Documentation de l’API backend sur Railway')
+      .setVersion('1.0')
+      .addTag('api')
+      .addBearerAuth()
+      .build();
+
+    const document = SwaggerModule.createDocument(app, config);
+    
+    // Le premier argument 'api' est le chemin de la doc. 
+    SwaggerModule.setup('api', app, document);
+
+    //Gestion du Port pour Railway
+    const port = process.env.PORT || 8080;    
+    await app.listen(port, '0.0.0.0');
+    
+  } catch (error) {
+    process.exit(1);
+  }
 }
 bootstrap();
