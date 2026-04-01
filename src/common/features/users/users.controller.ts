@@ -26,8 +26,24 @@ constructor(
   @Post('create')
   @Public()
   @ApiProperty({ description: 'Créer un nouveau utilisateur' })
-  create(@Body() dto: CreateUserDto){
-    return this.commandBus.execute(new CreateUserCommand(dto));
+  async create(@Body() dto: CreateUserDto){
+    try {
+      const user = await this.commandBus.execute(new CreateUserCommand(dto));
+      return {
+        success: true,
+        message: 'Utilisateur créé avec succès',
+        data: user
+      };
+    } catch (error) {
+      if (error.message === 'Cet email est déjà utilisé') {
+        return {
+          success: false,
+          message: 'Cet email est déjà utilisé',
+          statusCode: HttpStatus.CONFLICT
+        };
+      }
+      throw error;
+    }
 }
 
   @Get('All')

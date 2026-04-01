@@ -13,12 +13,12 @@ import { join } from 'path';
         transport: {
           service: 'gmail',
           auth: {
-            user: configService.get<string>('MAIL_USER'),
-            pass: configService.get<string>('MAIL_PASSWORD'),
+            user: configService.get<string>('EMAIL_USER'),
+            pass: configService.get<string>('EMAIL_PASS'),
           },
         },
         defaults: {
-          from: `"Support Treso" <${configService.get<string>('MAIL_USER')}>`,
+          from: `"Lockify" <${configService.get<string>('EMAIL_USER')}>`,
         },
         template: {
          dir: join(__dirname, 'templates'),

@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
+import { MailModule } from 'src/common/mail/mail.module';
 import { CreateUsersHandler } from './handlers/create-user.handler';
 import { UpdateUsersHandler } from './handlers/update-user.handler';
 import { DeleteUsersHandler } from './handlers/delete-user.handler';
@@ -28,6 +29,7 @@ const QueryHandlers = [
   imports: [
     CqrsModule, 
     ConfigModule,
+    MailModule,
     MongooseModule.forFeature([
       { name: 'User',  schema: UserSchema },
       { name: Auth.name, schema: AuthSchema },
