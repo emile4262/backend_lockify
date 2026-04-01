@@ -204,7 +204,7 @@ export class usersRepository implements IUsersInterface {
 
         return user;
     }
-
+  
     async findAll(query: GetUserQuery): Promise<UserDocument[]> {
         const { page = 1, limit = 10 } = query;
         const skip = (page - 1) * limit;
