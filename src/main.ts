@@ -52,6 +52,7 @@ async function bootstrap() {
     console.error('❌ ERREUR CRITIQUE AU DÉMARRAGE :', error);
     process.exit(1);
   }
+  
 }
 
 bootstrap();
