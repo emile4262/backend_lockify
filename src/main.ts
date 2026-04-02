@@ -22,10 +22,6 @@ async function bootstrap() {
     .build();
 
   const app = await NestFactory.create(AppModule);
-  // Appel du bootstrap d'import
-  const importService = app.get('ImportService');
-  await importService.importFromExcel();
-
   app.useGlobalGuards(app.get(JwtAuthGuard));
 
   app.enableCors({
