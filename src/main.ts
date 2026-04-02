@@ -6,8 +6,8 @@ import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder } from "@nestjs/swagger";
 async function bootstrap() {
   const config = new DocumentBuilder()
-    .setTitle('Joseph Treso API')
-    .setDescription('API documentation for Joseph Treso')
+    .setTitle('lockify API')
+    .setDescription('API documentation for lockify application')
     .setVersion('1.0')
     .addTag('api')
     .addBearerAuth
@@ -31,12 +31,10 @@ async function bootstrap() {
   });
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('document', app, document);
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: false,
-      transform: true,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({
+  whitelist: true,
+  forbidNonWhitelisted: true,
+  transform: true, 
+}));
 }
 void bootstrap();
