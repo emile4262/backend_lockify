@@ -2,7 +2,7 @@ import { Injectable, BadRequestException, NotFoundException, HttpException } fro
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import * as mongoose from 'mongoose'
-import { DocumentEntity, DocumentDocument } from 'src/common/schema/documents.schema'
+import { DocumentEntity, DocumentDocument } from 'src/schema/documents.schema'
 import { DeleteDocumentCommand } from '../commands/delete.command'
 import { UpdateDocumentCommand } from '../commands/update.command'
 import { UploadDocumentCommand } from '../commands/upload.command'

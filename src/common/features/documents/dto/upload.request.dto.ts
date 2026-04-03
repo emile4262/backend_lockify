@@ -6,7 +6,7 @@ import {
   IsDateString,
   MaxLength,
 } from 'class-validator'
-import { DocumentCategory } from 'src/common/schema/documents.schema'
+import { DocumentCategory } from 'src/schema/documents.schema'
 
 export class UploadDocumentRequestDto {
 

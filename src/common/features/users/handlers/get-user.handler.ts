@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IQueryHandler, QueryHandler } from '@nestjs/cqrs';
-import { UserDocument } from 'src/common/schema/users.schema';
+import { UserDocument } from 'src/schema/users.schema';
 import { GetUserQuery } from '../query/get-user.query';
 import { usersRepository } from '../repository/users.repository';
 

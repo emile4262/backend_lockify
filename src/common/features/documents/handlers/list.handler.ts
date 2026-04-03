@@ -3,7 +3,7 @@ import { DocumentRepository } from '../repository/document.repository'
 import { ListDocumentsQuery } from '../query/list.document'
 import { PaginationDto } from '../dto/pagination.dto'
 import { PaginationService } from 'src/pagination/pagination'
-import { DocumentEntity } from 'src/common/schema/documents.schema'
+import { DocumentEntity } from 'src/schema/documents.schema'
 
 @QueryHandler(ListDocumentsQuery)
 export class ListDocumentsHandler

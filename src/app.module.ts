@@ -10,6 +10,8 @@ import { AuthModule } from './common/features/auth/auth.module'
 import { JwtAuthGuard } from './guards/jwt-auth.guard'
 import { UsersModule } from './common/features/users/users.module'
 import { DocumentsModule } from './common/features/documents/document.module'
+import { NotificationModule } from './common/features/notifications/notification.module'
+import { CategoryModule } from './common/features/categories/categorie.module'
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { DocumentsModule } from './common/features/documents/document.module'
     AuthModule,
     UsersModule,
     DocumentsModule,
+    NotificationModule,
+    CategoryModule,
 
     BullModule.forRootAsync({
       imports: [ConfigModule],

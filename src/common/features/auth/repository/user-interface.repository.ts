@@ -1,4 +1,4 @@
-import { AuthDocument } from "src/common/schema/auth.schema";
+import { AuthDocument } from "src/schema/auth.schema";
 
 export interface IAuthInterface {
   create(data: { email: string; passwordHash: string }): Promise<AuthDocument>

@@ -1,4 +1,4 @@
-import { DocumentCategory } from "src/common/schema/documents.schema";
+import { DocumentCategory } from "src/schema/documents.schema";
 import { PaginationDto } from "../dto/pagination.dto";
 
 export class ListDocumentsQuery {

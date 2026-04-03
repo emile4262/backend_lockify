@@ -9,8 +9,8 @@ import { UpdateUsersHandler } from './handlers/update-user.handler';
 import { DeleteUsersHandler } from './handlers/delete-user.handler';
 import { GetUsersHandler } from './handlers/get-user.handler';
 import { GetOneUsersHandler } from './handlers/getOne-user.handler';
-import { UserSchema } from 'src/common/schema/users.schema';
-import { Auth, AuthSchema } from 'src/common/schema/auth.schema';
+import { UserSchema } from 'src/schema/users.schema';
+import { Auth, AuthSchema } from 'src/schema/auth.schema';
 import { UsersController } from './users.controller';
 import { usersRepository } from './repository/users.repository';
 

@@ -1,4 +1,4 @@
-import { DocumentCategory, DocumentDocument } from "src/common/schema/documents.schema"
+import { DocumentCategory, DocumentDocument } from "src/schema/documents.schema"
 import { DocumentResponseDto } from "../dto/document.response.dto"
 
 export interface IDocumentInterface {

@@ -6,7 +6,7 @@ import { LoginUserCommand } from '../commands/login-user.command'
 import { AuthResponseDto } from '../dto/auth.response.dto'
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose'
-import { Auth } from 'src/common/schema/auth.schema'
+import { Auth } from 'src/schema/auth.schema'
 import { ConfigService } from '@nestjs/config'
 import { LoginRequestDto } from '../dto/login.request.dto'
 

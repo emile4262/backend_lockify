@@ -1,4 +1,4 @@
-import { UserDocument } from "src/common/schema/users.schema";
+import { UserDocument } from "src/schema/users.schema";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { GetUserQuery } from "../query/get-user.query";
 import { GetOneUserQuery } from "../query/getOne-user.query";

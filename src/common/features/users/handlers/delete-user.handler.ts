@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ICommandHandler, CommandHandler } from '@nestjs/cqrs';
-import { UserDocument } from 'src/common/schema/users.schema';
+import { UserDocument } from 'src/schema/users.schema';
 import { DeleteUserCommand } from '../commands/delete-user.command';
 import { usersRepository } from '../repository/users.repository';
 

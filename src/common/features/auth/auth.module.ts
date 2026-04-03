@@ -8,7 +8,7 @@ import { LoginUserHandler } from './repository/user.repository'
 import { UserRepository } from './handlers/login-user.handler'
 import { JwtStrategy } from 'src/guards/jwt-strategy'
 import { ConfigModule } from '@nestjs/config'
-import { Auth, AuthSchema } from 'src/common/schema/auth.schema'
+import { Auth, AuthSchema } from 'src/schema/auth.schema'
 
 const CommandHandlers = [
   LoginUserHandler,
