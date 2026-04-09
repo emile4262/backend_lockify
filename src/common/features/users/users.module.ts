@@ -7,8 +7,8 @@ import { MailModule } from 'src/common/mail/mail.module';
 import { CreateUsersHandler } from './handlers/create-user.handler';
 import { UpdateUsersHandler } from './handlers/update-user.handler';
 import { DeleteUsersHandler } from './handlers/delete-user.handler';
-import { GetUsersHandler } from './handlers/get-user.handler';
 import { GetOneUsersHandler } from './handlers/getOne-user.handler';
+import { GetUserHandler } from './handlers/get-user.handler';
 import { UserSchema } from 'src/schema/users.schema';
 import { Auth, AuthSchema } from 'src/schema/auth.schema';
 import { UsersController } from './users.controller';
@@ -21,7 +21,7 @@ const CommandHandlers = [
 ];
 
 const QueryHandlers = [
-  GetUsersHandler, 
+  GetUserHandler, 
   GetOneUsersHandler,
 ];
 

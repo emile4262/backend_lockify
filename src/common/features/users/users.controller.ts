@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Delete, Param, HttpStatus, UseGuards, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Delete, Param, HttpStatus, UseGuards, Inject, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiProperty, ApiBearerAuth } from '@nestjs/swagger';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -8,9 +8,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateUserCommand } from './commands/update-user.command';
 import { DeleteUserCommand } from './commands/delete-user.command';
 import { usersRepository } from './repository/users.repository';
-import { GetUserQuery } from './query/get-user.query';
+import { GetUsersQuery } from './query/get-users.query';
 import { Public } from '../../../guards/public.decorator';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { PaginationDto } from '../documents/dto/pagination.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -26,31 +27,16 @@ constructor(
   @Post('create')
   @Public()
   @ApiProperty({ description: 'Créer un nouveau utilisateur' })
-  async create(@Body() dto: CreateUserDto){
-    try {
-      const user = await this.commandBus.execute(new CreateUserCommand(dto));
-      return {
-        success: true,
-        message: 'Utilisateur créé avec succès',
-        data: user
-      };
-    } catch (error) {
-      if (error.message === 'Cet email est déjà utilisé') {
-        return {
-          success: false,
-          message: 'Cet email est déjà utilisé',
-          statusCode: HttpStatus.CONFLICT
-        };
-      }
-      throw error;
-    }
+  create(@Body() dto: CreateUserDto){
+    return this.commandBus.execute(new CreateUserCommand(dto));
 }
 
   @Get('All')
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'Users retrieved successfully' })
-  getUsers() {
-    return this.queryBus.execute(new GetUserQuery());
+  getUsers( @Query() dto: PaginationDto,
+  ) {
+    return this.queryBus.execute(new GetUsersQuery(dto.page, dto.limit, dto.search, dto.dateCreationDebut, dto.dateCreationFin));
   }
 
   @Get(':id')

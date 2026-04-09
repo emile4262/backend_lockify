@@ -12,6 +12,7 @@ import { UsersModule } from './common/features/users/users.module'
 import { DocumentsModule } from './common/features/documents/document.module'
 import { NotificationModule } from './common/features/notifications/notification.module'
 import { CategoryModule } from './common/features/categories/categorie.module'
+import { SharingModule } from './common/features/sharing/sharig.module'
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CategoryModule } from './common/features/categories/categorie.module'
     DocumentsModule,
     NotificationModule,
     CategoryModule,
+    SharingModule,
 
     BullModule.forRootAsync({
       imports: [ConfigModule],

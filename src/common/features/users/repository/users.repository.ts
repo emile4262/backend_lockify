@@ -5,12 +5,13 @@ import { UserDocument } from 'src/schema/users.schema';
 import { IUsersInterface } from './users.interface.repository';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { GetUserQuery } from '../query/get-user.query';
 import { GetOneUserQuery } from '../query/getOne-user.query';
 import { UpdateUserCommand } from '../commands/update-user.command';
 import { DeleteUserCommand } from '../commands/delete-user.command';
 import { MailService } from 'src/common/mail/mail';
 import { ConfigService } from '@nestjs/config';
+import { PaginationsDto } from '../dto/pagination.dto';
+import { PaginationService } from 'src/pagination/pagination';
 
 @Injectable()
 export class usersRepository implements IUsersInterface {
@@ -205,20 +206,41 @@ export class usersRepository implements IUsersInterface {
         return user;
     }
   
-    async findAll(query: GetUserQuery): Promise<UserDocument[]> {
-        const { page = 1, limit = 10 } = query;
-        const skip = (page - 1) * limit;
-        
-        const users = await this.usersModel
-            .find()
-            .select('-password')
-            .skip(skip)
-            .limit(limit)
-            .sort({ createdAt: -1 })
-            .exec();
-        
-        return users;
+ async findAllByUsers(
+    dto: PaginationsDto,
+  ): Promise<PaginationService<UserDocument>>{
+    const { search, page, limit, dateCreationDebut, dateCreationFin } = dto;
+    const query: any = {};
+
+    const Page = page ? parseInt(String(page), 10) : 1;
+    const Limit = limit ? parseInt(String(limit), 10) : 10;
+
+    if (search) {
+      query.designation = { $regex: search, $options: 'i' };
     }
+    // Filtres de date - corrigé pour fonctionner individuellement
+    if (dateCreationDebut || dateCreationFin) {
+      query.createdAt = {};
+      if (dateCreationDebut) {
+        query.createdAt.$gte = new Date(dateCreationDebut);
+      }
+      if (dateCreationFin) {
+        const endDate = new Date(dateCreationFin);
+        endDate.setHours(23, 59, 59, 999);
+        query.createdAt.$lte = endDate;
+      }
+    }
+
+    const data = await this.usersModel
+      .find(query)
+      .sort({ createdAt: 'desc', _id: 'desc' })
+      .skip((Page - 1) * Limit)
+      .limit(Limit)
+      .exec();
+            
+    const total = await this.usersModel.countDocuments(query);
+    return new PaginationService<UserDocument>(data, Page, Limit, total);
+  } 
 
     async findOne(query: GetOneUserQuery): Promise<UserDocument> {
         const user = await this.usersModel.findById(query.id).select('-password');
