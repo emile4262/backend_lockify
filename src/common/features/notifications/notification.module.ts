@@ -6,6 +6,8 @@ import { NotificationController } from './notification.controller'
 import { NotificationRepository } from './repository/notification.repository'
 import { NotificationEntity, NotificationSchema } from 'src/schema/notification.schema'
 import { DocumentEntity, DocumentSchema } from 'src/schema/documents.schema'
+import { User, UserSchema } from 'src/schema/users.schema'
+import { MailModule } from 'src/common/mail/mail.module'
 import { CreateNotificationHandler } from './handlers/create.notification'
 import { MarquerLueHandler } from './handlers/marquer.lues'
 import { MarquerTousLuesHandler } from './handlers/marquer.tous.lues'
@@ -30,9 +32,11 @@ const QueryHandlers = [
 @Module({
   imports: [
     CqrsModule,
+    MailModule,
     MongooseModule.forFeature([
       { name: NotificationEntity.name, schema: NotificationSchema },
       { name: DocumentEntity.name, schema: DocumentSchema },
+      { name: User.name, schema: UserSchema },
     ]),
     BullModule.registerQueue({
       name: 'email',

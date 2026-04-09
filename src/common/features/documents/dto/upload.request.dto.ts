@@ -6,7 +6,8 @@ import {
   IsDateString,
   MaxLength,
 } from 'class-validator'
-import { DocumentCategory } from 'src/schema/documents.schema'
+import { Transform } from 'class-transformer'
+import { typeDocument } from 'src/schema/documents.schema'
 
 export class UploadDocumentRequestDto {
 
@@ -16,10 +17,50 @@ export class UploadDocumentRequestDto {
   fileName: string
 
   @ApiProperty({description: "Renseigner la catégorie du document"})
-  @IsEnum(DocumentCategory, { message: 'Catégorie invalide' })
-  category: DocumentCategory
+  @IsEnum({
+    type: 'string',
+    enum: [
+          'IDENTITE',
+          'SANTE',
+          'FINANCE',
+          'TRAVAIL',
+          'LOGEMENT',
+          'FAMILLE',
+          'CONTRAT', 
+          'FACTURE', 
+          'PIECE_IDENTITE', 
+          'PERMIS_CONDUITE', 
+          'PASSEPORT', 
+          'JURIDIQUE', 
+          'AUTRE'
+        ] },
+  )
+  @Transform(({ value }) => value?.toLowerCase()) // Transforme FACTURE en facture
+  typeDocument: typeDocument
 
-   
+  // Alias pour compatibilité avec les anciens appels
+  @ApiProperty({description: "Renseigner la catégorie du document (alias)"})
+  @IsEnum({
+    type: 'string',
+    enum: [
+          'IDENTITE',
+          'SANTE',
+          'FINANCE',
+          'TRAVAIL',
+          'LOGEMENT',
+          'FAMILLE',
+          'CONTRAT', 
+          'FACTURE', 
+          'PIECE_IDENTITE', 
+          'PERMIS_CONDUITE', 
+          'PASSEPORT', 
+          'JURIDIQUE', 
+          'AUTRE'
+        ] },
+  )
+  @IsOptional()
+  @Transform(({ value }) => value?.toLowerCase()) // Transforme FACTURE en facture
+  DocumentCategory?: typeDocument
 
   @IsOptional()
   @IsDateString({}, { message: 'Date d\'expiration invalide' })

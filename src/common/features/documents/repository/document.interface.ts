@@ -1,14 +1,14 @@
-import { DocumentCategory, DocumentDocument } from "src/schema/documents.schema"
+import { typeDocument, DocumentDocument } from "src/schema/documents.schema"
 import { DocumentResponseDto } from "../dto/document.response.dto"
 
 export interface IDocumentInterface {
   create(data: {
     ownerId: string
     fileName: string
-    mimeType: string
+    fileType: string
     fileSizeBytes: number
-    storageKey: string
-    category: DocumentCategory
+    pdfUrl: string
+    category: typeDocument
     tags: string[]
     expiresAt: Date | null
   }): Promise<DocumentDocument>
@@ -18,7 +18,7 @@ export interface IDocumentInterface {
   findAll(
     ownerId: string,
     filters: {
-      category?: DocumentCategory
+      category?: typeDocument
       search?: string
       page: number
       pageSize: number
@@ -30,7 +30,7 @@ export interface IDocumentInterface {
     ownerId: string,
     data: Partial<{
       fileName: string
-      category: DocumentCategory
+      category: typeDocument
       tags: string[]
       expiresAt: Date | null
       isFavorite: boolean

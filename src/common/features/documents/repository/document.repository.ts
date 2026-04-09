@@ -21,7 +21,6 @@ const ALLOWED_MIME_TYPES = [
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 ]
 
-const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50 Mo
 
 @Injectable()
 export class DocumentRepository {
@@ -36,11 +35,10 @@ export class DocumentRepository {
       const document = await this.documentModel.create({
         userId:       new mongoose.Types.ObjectId(cmd.userId),
         fileName:      cmd.fileName,
-        mimeType:      cmd.mimeType,
+        fileType:      cmd.mimeType,
         fileSizeBytes: cmd.fileSizeBytes,
         pdfUrl:    `uploads/${cmd.userId}/${cmd.fileName}`,
-        category:      cmd.category,
-        tags:          [],
+        typeDocument:      cmd.typeDocument,
         expiresAt:     cmd.expiresAt,
       })
  

@@ -8,7 +8,7 @@ export class MarquerTousLuesHandler
 {
   constructor(private readonly notificationRepository: NotificationRepository) {}
 
-  async execute(cmd: MarquerTousLuesCommand): Promise<{ updated: number }> {
-    return this.notificationRepository.marquerToutesLues(cmd)
+  async execute(cmd: MarquerTousLuesCommand): Promise<{ message: string }> {
+    return this.notificationRepository.marquerToutesCommeLues(cmd.userId)
   }
 }

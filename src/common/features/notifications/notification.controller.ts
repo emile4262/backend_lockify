@@ -90,6 +90,7 @@ export class NotificationController {
         NotificationType.INFO,
         'Test notification',
         'Ceci est une notification de test',
+        [], // destinatairesProfils - empty array for test notification
       ),
     )
   }

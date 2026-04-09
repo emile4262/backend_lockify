@@ -4,7 +4,7 @@ import * as mongoose from 'mongoose'
 
 export type DocumentDocument = DocumentEntity & mongoose.Document
 
-export enum DocumentCategory {
+export enum typeDocument {
   IDENTITE = 'identite',
   SANTE = 'sante',
   FINANCE = 'finance',
@@ -12,6 +12,11 @@ export enum DocumentCategory {
   LOGEMENT = 'logement',
   FAMILLE = 'famille',
   JURIDIQUE = 'juridique',
+  CONTRAT = 'contrat',
+  FACTURE = 'facture',
+  PIECE_IDENTITE = 'piece_identite',
+  PERMIS_CONDUITE = 'permis_conduite',
+  PASSEPORT = 'passeport',
   AUTRE = 'autre',
 }
 
@@ -24,7 +29,7 @@ export class DocumentEntity {
   fileName: string
 
   @Prop({ required: true })
-  mimeType: string
+  fileType: string
 
   @Prop({ required: true })
   fileSizeBytes: number
@@ -34,13 +39,28 @@ export class DocumentEntity {
 
   @Prop({
     required: true,
-    enum: DocumentCategory,
-    default: DocumentCategory.AUTRE,
+    type: 'string',
+    enum: [
+          'IDENTITE',
+          'SANTE',
+          'FINANCE',
+          'TRAVAIL',
+          'LOGEMENT',
+          'FAMILLE',
+          'CONTRAT', 
+          'FACTURE', 
+          'PIECE_IDENTITE', 
+          'PERMIS_CONDUITE', 
+          'PASSEPORT', 
+          'JURIDIQUE', 
+          'AUTRE'
+        ],
+    default: 'AUTRE',
   })
-  category: DocumentCategory
+  typeDocument: typeDocument
 
-  @Prop({ default: [] })
-  tags: string[]
+  // @Prop({ default: [] })
+  // tags: string[]
 
   @Prop({ type: Date, default: null })
   expiresAt: Date | null

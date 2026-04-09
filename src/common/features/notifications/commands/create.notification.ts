@@ -5,6 +5,7 @@ export class CreateNotificationCommand {
     public readonly type: NotificationType,
     public readonly title: string,
     public readonly message: string,
+    public readonly destinatairesProfils: string[],
     public readonly documentId: string | null = null,
   ) {}
 }

@@ -24,8 +24,18 @@ export class NotificationEntity {
   @Prop({ required: true })
   title: string
 
+  @Prop({ type: [String], default: [] })
+  destinatairesProfils: string[];
+
+  @Prop({ type: [mongoose.Types.ObjectId], ref: 'User', default: [] })
+  lusParUtilisateurs: mongoose.Types.ObjectId[];
+
+
   @Prop({ required: true })
   message: string
+  
+  @Prop({ default: false })
+  emailEnvoye: boolean;
 
   @Prop({ default: false })
   isRead: boolean

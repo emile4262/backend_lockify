@@ -1,4 +1,4 @@
-import { DocumentCategory } from 'src/schema/documents.schema'
+import { typeDocument } from 'src/schema/documents.schema'
 
 export class UploadDocumentCommand {
   constructor(
@@ -7,7 +7,7 @@ export class UploadDocumentCommand {
     public readonly mimeType: string,
     public readonly fileSizeBytes: number,
     public readonly fileBuffer: Buffer,
-    public readonly category: DocumentCategory,
+    public readonly typeDocument: typeDocument,
     public readonly expiresAt: Date | null,
   ) {}
 }

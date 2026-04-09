@@ -12,13 +12,12 @@ import {
   UploadedFile,
   ParseFilePipe,
   MaxFileSizeValidator,
-  FileTypeValidator,
   UnauthorizedException,
 } from '@nestjs/common'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { memoryStorage } from 'multer'
-import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiProperty, ApiBearerAuth } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiProperty, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { CurrentUser, Public } from 'src/guards/public.decorator'
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard'
 import { DeleteDocumentCommand } from './commands/delete.command'
@@ -54,6 +53,21 @@ export class DocumentsController {
   @UseInterceptors(FileInterceptor('file', { storage: memoryStorage() }))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({ summary: 'Upload un fichier document' })
+  // @ApiQuery({ name: 'typeDocument', required: false, enum: [
+  //   'IDENTITE',
+  //   'SANTE',
+  //   'FINANCE',
+  //   'TRAVAIL',
+  //   'LOGEMENT',
+  //   'FAMILLE',
+  //   'CONTRAT', 
+  //   'FACTURE', 
+  //   'PIECE_IDENTITE', 
+  //   'PERMIS_CONDUITE', 
+  //   'PASSEPORT', 
+  //   'JURIDIQUE', 
+  //   'AUTRE'
+  // ] })
   @ApiBody({
     schema: {
       type: 'object',
@@ -61,8 +75,25 @@ export class DocumentsController {
         file: {
           type: 'string',
           format: 'binary',
+          description: 'Fichier Excel',
         },
         fileName: { type: 'string' },
+          
+        typeDocument: { type: 'string', enum: [
+          'IDENTITE',
+          'SANTE',
+          'FINANCE',
+          'TRAVAIL',
+          'LOGEMENT',
+          'FAMILLE',
+          'CONTRAT', 
+          'FACTURE', 
+          'PIECE_IDENTITE', 
+          'PERMIS_CONDUITE', 
+          'PASSEPORT', 
+          'JURIDIQUE', 
+          'AUTRE'
+        ] },
         // category: {
         //   type: 'string',
         //   enum: Object.values(DocumentCategory),
@@ -78,10 +109,8 @@ export class DocumentsController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({ maxSize: 50 * 1024 * 1024 }),
-          new FileTypeValidator({
-            fileType: /(pdf|jpeg|png|heic|docx|xlsx)/,
-          }),
         ],
+        fileIsRequired: true,
       }),
     )
     file: Express.Multer.File,
@@ -98,7 +127,7 @@ export class DocumentsController {
         file.mimetype,
         file.size,
         file.buffer,              // stockage direct en BD
-        dto.category,
+        dto.typeDocument ?? dto.DocumentCategory, // Utilise l'alias si typeDocument n'est pas fourni
         dto.expiresAt ? new Date(dto.expiresAt) : null,
       ),
     )
@@ -149,7 +178,7 @@ export class DocumentsController {
         id,
         user.userId,
         dto.fileName,
-        dto.category,
+        dto.typeDocument,
         
       ),
     )

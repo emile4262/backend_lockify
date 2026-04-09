@@ -10,6 +10,7 @@ export class CreateNotificationHandler
   constructor(private readonly notificationRepository: NotificationRepository) {}
 
   async execute(cmd: CreateNotificationCommand): Promise<NotificationResponseDto> {
-    return this.notificationRepository.create(cmd)
+    const notification = await this.notificationRepository.create(cmd)
+    return NotificationResponseDto.fromDocument(notification)
   }
 }

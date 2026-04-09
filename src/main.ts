@@ -5,11 +5,9 @@ import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  console.log('--- ÉTAPE 1: Initialisation Nest ---');
   
   try {
     const app = await NestFactory.create<NestExpressApplication>(AppModule);
-    console.log('--- ÉTAPE 2: AppModule chargé ---');
 
     //Préfixe Global : Toutes tes routes seront sous /api (ex: /api/users/All)
     app.setGlobalPrefix('api');

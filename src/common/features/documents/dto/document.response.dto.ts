@@ -1,14 +1,14 @@
-import { DocumentCategory } from 'src/schema/documents.schema'
+import { typeDocument } from 'src/schema/documents.schema'
 
 export class DocumentResponseDto {
   constructor(
     public readonly id: string,
     public readonly userId: string,
     public readonly fileName: string,
-    public readonly mimeType: string,
+    public readonly fileType: string,
     public readonly fileSizeBytes: number,
-    public readonly storageKey: string,
-    public readonly category: DocumentCategory,
+    public readonly pdfUrl: string,
+    public readonly typeDocument: typeDocument,
     public readonly tags: string[],
     public readonly expiresAt: string | null,
     public readonly isFavorite: boolean,
@@ -21,10 +21,10 @@ export class DocumentResponseDto {
       doc._id.toString(),
       doc.userId.toString(),
       doc.fileName,
-      doc.mimeType,
+      doc.fileType,
       doc.fileSizeBytes,
       doc.pdfUrl,
-      doc.category,
+      doc.typeDocument,
       doc.tags ?? [],
       doc.expiresAt ? new Date(doc.expiresAt).toISOString() : null,
       doc.isFavorite ?? false,

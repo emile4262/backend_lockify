@@ -8,7 +8,7 @@ import {
   IsBoolean,
   MaxLength,
 } from 'class-validator'
-import { DocumentCategory } from 'src/schema/documents.schema'
+import { typeDocument } from 'src/schema/documents.schema'
 
 export class UpdateDocumentRequestDto {
 
@@ -19,8 +19,8 @@ export class UpdateDocumentRequestDto {
   fileName?: string
 
   @IsOptional()
-  @IsEnum(DocumentCategory, { message: 'Catégorie invalide' })
-  category?: DocumentCategory
+  @IsEnum(typeDocument, { message: 'Catégorie invalide' })
+  typeDocument?: typeDocument
 
 
 
