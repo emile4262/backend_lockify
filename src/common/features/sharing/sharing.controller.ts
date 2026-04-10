@@ -60,7 +60,7 @@ export class SharingController {
     @Req() req: Request,
   ) {
     // Utilisateur spécifique hardcoded ou à définir selon vos besoins
-    const usersId = '69ca796e7e1ea1ff70d7dcec'; // ObjectId valide (24 caractères hex)
+    const usersId = '69ca796e7e1ea1ff70d7dcec'; 
     
     // Valeur par défaut si expirationHeures n'est pas fourni
     const expirationHeures = dto.expirationHeures || 24; // 24 heures par défaut
@@ -84,20 +84,18 @@ export class SharingController {
   }
 
   @Get('historique')
+  @Public()
   @ApiOperation({ summary: 'Historique des partages' })
   async getHistorique(
-    @CurrentUser() user: JwtPayload,
     @Query() dto: PaginationDto,
   ) {
-    if (!user || !user.userId) {
-      throw new UnauthorizedException("L'utilisateur n'est pas authentifié ou l'ID utilisateur est manquant");
-    }
-
+    // Utilisateur spécifique pour la méthode publique
+    const usersId = '69ca796e7e1ea1ff70d7dcec'; // ObjectId valide  
     return this.queryBus.execute(
       new GetAllHistoriqueQuery(
-        user.userId,
-        dto.page,
-        dto.limit,
+        usersId,
+        dto.page || '1',
+        dto.limit || '10',
         dto.search,
         dto.dateCreationDebut,
         dto.dateCreationFin,
@@ -106,20 +104,16 @@ export class SharingController {
   }
 
   @Patch(':sharingId/revoquer')
+  @Public()
   @ApiOperation({ summary: 'Révoquer un lien' })
   async revoquer(
-    @CurrentUser() user: JwtPayload,
     @Param('sharingId') sharingId: string,
     @Req() req: Request,
   ): Promise<SharingResponseDto> {
-    if (!user || !user.userId) {
-      throw new UnauthorizedException("L'utilisateur n'est pas authentifié ou l'ID utilisateur est manquant");
-    }
-
-    const sharing = await this.commandBus.execute(
-      new RevoquerSharingCommand(sharingId, user.userId),
+    
+    return this.commandBus.execute(
+      new RevoquerSharingCommand(sharingId, '69ca796e7e1ea1ff70d7dcec'),
     );
-    return SharingResponseDto.fromDocument(sharing, this.getBaseUrl(req, sharing._id));
   }
 
   @Get(':id')

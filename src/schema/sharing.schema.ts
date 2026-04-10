@@ -23,7 +23,7 @@ export class SharingEntity {
   @Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Document' })
   documentId: mongoose.Types.ObjectId
 
-  @Prop({ required: true, unique: true })
+  @Prop({ unique: true, sparse: true })
   token: string
 
   @Prop({ required: true, enum: SharingPermission, default: SharingPermission.LECTURE })

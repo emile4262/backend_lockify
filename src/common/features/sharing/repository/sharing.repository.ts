@@ -65,7 +65,7 @@ export class SharingRepository {
   // ─────────────────────────────────────────────
   // COMMAND — Révoquer un lien de partage
   // ─────────────────────────────────────────────
-  async revoquer(cmd: RevoquerSharingCommand): Promise<SharingResponseDto> {
+  async revoquer(cmd: RevoquerSharingCommand): Promise<SharingDocument> {
     const sharing = await this.sharingModel
       .findOne({ _id: cmd.sharingId, usersId: cmd.usersId })
       .exec()
@@ -79,7 +79,7 @@ export class SharingRepository {
     sharing.status = SharingStatus.REVOQUE
     await sharing.save()
 
-    return SharingResponseDto.fromDocument(sharing, global.BASE_URL)
+    return sharing
   }
 
   // ─────────────────────────────────────────────
@@ -129,7 +129,7 @@ export class SharingRepository {
   async getByToken(query: GetSharingQuery): Promise<SharingDocument> {
     const sharing = await this.sharingModel
       .findOne({ _id: query.id })
-      .populate('documentId')
+      .populate('documentId', null, 'DocumentEntity')
       .exec()
 
     if (!sharing) throw new NotFoundException('LIEN_INVALIDE')
@@ -161,7 +161,7 @@ export class SharingRepository {
       const Limit = limit ? parseInt(String(limit), 10) : 10;
   
       if (search) {
-        query.designation = { $regex: search, $options: 'i' };
+        query.accessLink = { $regex: search, $options: 'i' };
       }
       // Filtres de date - corrigé pour fonctionner individuellement
       if (dateCreationDebut || dateCreationFin) {

@@ -14,6 +14,8 @@ export class RevoquerSharingHandler
   ) {}
 
   async execute(cmd: RevoquerSharingCommand): Promise<SharingResponseDto> {
-    return this.sharingRepository.revoquer(cmd)
+    const sharing = await this.sharingRepository.revoquer(cmd)
+    // Note: baseUrl should be passed from controller, using empty for now
+    return SharingResponseDto.fromDocument(sharing, '')
   }
 }

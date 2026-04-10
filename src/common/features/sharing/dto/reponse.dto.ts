@@ -14,10 +14,14 @@ export class SharingResponseDto {
   ) {}
  
   static fromDocument(doc: any, baseUrl?: string): SharingResponseDto {
+    if (!doc || !doc._id) {
+      throw new Error('Document invalide ou manquant');
+    }
+    
     return new SharingResponseDto(
       doc._id.toString(),
-      doc.usersId.toString(),
-      doc.documentId.toString(),
+      doc.usersId?.toString() || '',
+      doc.documentId?.toString() || '',
       baseUrl ? `${baseUrl}/sharing/${doc._id}` : '',
       doc.permission,
       doc.status,
