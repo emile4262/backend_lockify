@@ -2,20 +2,30 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import * as dotenv from 'dotenv';
+
+// Charger explicitement le fichier .env
+dotenv.config({ path: '.env' });
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
- constructor(
+ // Dans JwtStrategy
+constructor(
   private configService: ConfigService,
 ) {
-   const secret = configService.get<string>('JWT_SECRET') || 'fallback-secret-key-for-development';
+   // Forcer la lecture depuis process.env avec fallback
+   const secret = process.env.JWT_SECRET?.trim() || 
+                 configService.get<string>('JWT_SECRET') || 
+                 'fallback-secret-key-for-development';
+  
+  //  console.log('JWT_SECRET utilisé par JwtStrategy:', secret ? 'CONFIGURÉ' : 'FALLBACK');
    super({
      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
      ignoreExpiration: false,
      secretOrKey: secret
    });
 }
-
+ // Dans JwtStrategy, méthode validate
 async validate(payload: { sub: string; email: string; role: string }): Promise<
 { userId: string; email: string; role: string }
 > {
@@ -29,4 +39,5 @@ async validate(payload: { sub: string; email: string; role: string }): Promise<
     role: payload.role,
   };
 }
-}
+
+  }

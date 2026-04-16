@@ -10,7 +10,37 @@ export class Auth {
   email: string
 
   @Prop({ required: true })
-  password: string
+  passwordHash: string
+
+  @Prop({ default: null })
+  lastPassword: string
+
+  @Prop({ required: true })
+  otpHash: string;
+
+  @Prop()
+  resetOtp: string
+
+  @Prop({ required: true })
+  tokenHash: string;
+
+  @Prop()
+  resetOtpExpires: Date
+
+  @Prop({ default: 0 })
+  resetOtpAttempts: number
+
+  @Prop({ default: 0 })
+  attempts: number;
+
+  @Prop({ required: true })
+  expiresAt: Date;
+
+  @Prop({ default: false })
+  used: boolean;
+
+  @Prop({ default: false })
+  isLocked: boolean
 }
 
 export const AuthSchema = SchemaFactory.createForClass(Auth)

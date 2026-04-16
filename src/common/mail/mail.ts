@@ -1,28 +1,32 @@
-import { Injectable } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
-@Injectable()
-export class MailService {
-  constructor(private readonly mailerService: MailerService) {}
+import { Module } from '@nestjs/common';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailService } from './mail.module';
 
-  async sendMail(to: string, subject: string, html: string) {
-    await this.mailerService.sendMail({
-      to,
-      subject,
-      html,
-    });
-  }
+export { MailService }; 
 
-  async sendMailWithTemplate(
-    to: string,
-    subject: string,
-    template: string,
-    context: any,
-  ) {
-    await this.mailerService.sendMail({
-      to,
-      subject,
-      template,
-      context,
-    });
-  }
-}
+@Module({
+  imports: [
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        transport: {
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          auth: {
+            user: config.get<string>('EMAIL_USER'),
+            pass: config.get<string>('EMAIL_PASS'),
+          },
+        },
+        defaults: {
+          from: `"Lockify" <${config.get<string>('EMAIL_USER')}>`,
+        },
+      }),
+    }),
+  ],
+  providers: [MailService],
+  exports: [MailService], // Ceci l'exporte pour NestJS, pas pour TypeScript
+})
+export class MailModule {}

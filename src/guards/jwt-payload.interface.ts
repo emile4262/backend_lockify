@@ -1,5 +1,7 @@
-// JWT payload type based on JwtStrategy.validate() return value
 export interface JwtPayload {
-  userId: string
-  email: string
+  sub: string;
+  email: string;
+  role: string;
+  iat?: number;
+  exp?: number;
 }

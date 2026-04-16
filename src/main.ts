@@ -3,6 +3,13 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import * as dotenv from 'dotenv';
+
+// Charger les variables d'environnement
+const result = dotenv.config();
+console.log(' DOTENV CONFIG RESULT:', result.error ? 'ERROR' : 'SUCCESS');
+console.log(' EMAIL_USER:', process.env.EMAIL_USER);
+console.log(' EMAIL_PASS:', process.env.EMAIL_PASS ? '***' + process.env.EMAIL_PASS.slice(-4) : 'UNDEFINED');
 
 async function bootstrap() {
   

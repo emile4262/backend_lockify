@@ -25,8 +25,7 @@ import { GetAllHistoriqueQuery } from './query/getAll.historique-query';
 
 // Auth & Types
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { JwtPayload } from 'src/guards/jwt-payload.interface';
-import { CurrentUser, Public } from 'src/guards/public.decorator';
+import { Public } from 'src/guards/public.decorator';
 import { SharingPermission } from 'src/schema/sharing.schema';
 import { GenererSharingRequestDto } from './dto/request.dto';
 import { SharingResponseDto } from './dto/reponse.dto';

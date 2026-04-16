@@ -1,42 +1,19 @@
-import { Injectable } from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { AuthDocument, Auth } from "src/schema/auth.schema";
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { Inject } from '@nestjs/common';
+import { LoginUserCommand } from '../commands/login-user.command';
+import { AUTH_REPOSITORY, IAuthRepository } from '../repository/auth-interface.repository';
 
-@Injectable()
-export class UserRepository implements UserRepository {
+@CommandHandler(LoginUserCommand)
+export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
   constructor(
-    @InjectModel(Auth.name)
-    private readonly userModel: Model<AuthDocument>,
+    @Inject(AUTH_REPOSITORY)
+    private readonly authRepository: IAuthRepository,
   ) {}
 
-  async execute(data: {
-    email: string
-    passwordHash: string
-  }): Promise<AuthDocument> {
-    return this.userModel.create(data)
+  async execute(command: LoginUserCommand): Promise<any> {
+    const { email, password } = command;
+
+    // Déléguer toute la logique métier au repository
+    return await this.authRepository.authenticateUser(email, password);
   }
-
-  // async findByEmail(email: string): Promise<UserDocument | null> {
-  //   return this.userModel
-  //     .findOne({ email: email.toLowerCase() })
-  //     .exec()
-  // }
-
-  // async findById(id: string): Promise<UserDocument | null> {
-  //   return this.userModel
-  //     .findById(id)
-  //     .select('-passwordHash')
-  //     .lean()
-  //     .exec()
-  // }
-
-  // async existsByEmail(email: string): Promise<boolean> {
-  //   const count = await this.userModel.countDocuments({
-  //     email: email.toLowerCase(),
-  //   })
-  //   return count > 0
-  // }
-
-  
 }

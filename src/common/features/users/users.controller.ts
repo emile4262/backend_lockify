@@ -13,8 +13,8 @@ import { Public } from '../../../guards/public.decorator';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { PaginationDto } from '../documents/dto/pagination.dto';
 
-@ApiTags('users')
-@ApiBearerAuth()
+// @ApiTags('users')
+// @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
 

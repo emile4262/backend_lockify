@@ -2,8 +2,8 @@ import { Controller, Get, Param, UseGuards } from '@nestjs/common'
 import { QueryBus } from '@nestjs/cqrs'
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger'
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard'
-import { CurrentUser } from 'src/guards/public.decorator'
 import { JwtPayload } from 'src/guards/jwt-payload.interface'
+import { CurrentUser } from 'src/guards/public.decorator'
 
 @ApiTags('categories')
 @ApiBearerAuth()
@@ -23,7 +23,7 @@ export class CategoryController {
   @Get('count')
   @ApiOperation({ summary: 'Nombre de documents par catégorie' })
   countByCategory(@CurrentUser() user: JwtPayload) {
-    return this.queryBus.execute({ userId: user.userId })
+    return this.queryBus.execute({ userId: user.sub })
   }
 
   // GET /categories/:slug — détail d'une catégorie

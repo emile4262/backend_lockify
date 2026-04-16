@@ -28,6 +28,7 @@ export class NotificationController {
   constructor(
     private readonly commandBus: CommandBus,
     private readonly queryBus: QueryBus,
+
   ) {}
 
   // GET /notifications — toutes les notifications
@@ -40,7 +41,7 @@ export class NotificationController {
   ) {
     return this.queryBus.execute(
       new NotificationAllQuery(
-        user.userId,
+        user.sub,
         page     ? Number(page)     : 1,
         pageSize ? Number(pageSize) : 20,
       ),
@@ -51,14 +52,14 @@ export class NotificationController {
   @Get('non-lues')
   @ApiOperation({ summary: 'Nombre de notifications non lues' })
   nombreNonLues(@CurrentUser() user: JwtPayload) {
-    return this.queryBus.execute(new NombreNonLueQuery(user.userId))
+    return this.queryBus.execute(new NombreNonLueQuery(user.sub))
   }
 
   // GET /notifications/alertes — alertes expiration non lues
   @Get('alertes')
   @ApiOperation({ summary: 'Alertes d\'expiration non lues' })
   alertes(@CurrentUser() user: JwtPayload) {
-    return this.queryBus.execute(new AlertesQuery(user.userId))
+    return this.queryBus.execute(new AlertesQuery(user.sub))
   }
 
   // PATCH /notifications/:id/lue — marquer une notification comme lue
@@ -68,14 +69,14 @@ export class NotificationController {
     @CurrentUser() user: JwtPayload,
     @Param('id') id: string,
   ) {
-    return this.commandBus.execute(new MarquerLueCommand(id, user.userId))
+    return this.commandBus.execute(new MarquerLueCommand(id, user.sub))
   }
 
   // PATCH /notifications/toutes/lues — marquer toutes comme lues
   @Patch('toutes/lues')
   @ApiOperation({ summary: 'Marquer toutes les notifications comme lues' })
   marquerToutesLues(@CurrentUser() user: JwtPayload) {
-    return this.commandBus.execute(new MarquerTousLuesCommand(user.userId))
+    return this.commandBus.execute(new MarquerTousLuesCommand(user.sub))
   }
 
   // POST /notifications — créer manuellement (usage interne / test)
@@ -86,7 +87,7 @@ export class NotificationController {
   ) {
     return this.commandBus.execute(
       new CreateNotificationCommand(
-        user.userId,
+        user.sub,
         NotificationType.INFO,
         'Test notification',
         'Ceci est une notification de test',
